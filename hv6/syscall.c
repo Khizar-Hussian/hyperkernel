@@ -8,6 +8,8 @@
 #include "syscall.h"
 #include "vm.h"
 
+extern pid_t current;
+
 extern int sys_debug_exit(int r);
 
 extern uint64_t sys_debug_sysctl(uint64_t id);
@@ -108,4 +110,12 @@ void *syscalls[NR_syscalls] = {
         [SYS_debug_print_screen] = sys_debug_print_screen,
         [SYS_debug_dmesg] = sys_debug_dmesg,
         [SYS_debug_sysctl] = sys_debug_sysctl,
+        [SYS_set_usyscall_filter] = sys_set_usyscall_filter;
+
 };
+
+void
+syscall(void)
+{
+    struct proc *current_proc = get_proc(current);
+}

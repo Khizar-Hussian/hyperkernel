@@ -53,6 +53,8 @@
 #define SYS_reclaim_port 72
 #define SYS_mmap_page 80
 #define SYS_munmap_page 81
+// adding syscall to set the unix syscall filter
+#define SYS_set_usyscall_filter 90
 #define SYS_debug_exit 123
 #define SYS_debug_print_console 124
 #define SYS_debug_print_screen 125

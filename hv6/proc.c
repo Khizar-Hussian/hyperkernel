@@ -56,6 +56,9 @@ int alloc_proc(pid_t pid, pn_t page_table_root, pn_t stack, pn_t hvm)
     alloc_page(pid, PAGE_TYPE_PROC_DATA, hvm);
     proc->hvm = hvm;
 
+    // set proc unix syscall filter
+    proc->unix_filter = ~(proc->unix_filter & 0);
+
     parent = get_proc(current);
     ++parent->nr_children;
 
@@ -135,18 +138,23 @@ int switch_proc(pid_t pid)
     if (!is_proc_state(pid, PROC_RUNNABLE))
         return -EINVAL;
 
-    if (current != pid) {
+    if (current != pid)
+    {
         struct proc *old, *new;
 
         old = get_proc(current);
         new = get_proc(pid);
         assert(new->state == PROC_RUNNABLE, "new proc must be runnable");
 
-        if (old->state == PROC_RUNNING) {
-            if (old->killed) {
+        if (old->state == PROC_RUNNING)
+        {
+            if (old->killed)
+            {
                 old->state = PROC_ZOMBIE;
                 proc_ready_del(old);
-            } else {
+            }
+            else
+            {
                 old->state = PROC_RUNNABLE;
             }
         }
@@ -178,20 +186,20 @@ static void switch_next(void)
     assert(r == 0, "switch_proc\n");
 }
 
- /*
-  * This is called by sys_switch in entry.S.
-  * - Upon entry, current's hvm is already flushed.
-  * - Upon exit, run_current() is called to return to user space.
-  */
- int sys_switch_helper(pid_t pid)
- {
- #if ENABLED(CONFIG_PREEMPT)
-     switch_next();
-     return 0;
- #else
-     return switch_proc(pid);
- #endif
- }
+/*
+ * This is called by sys_switch in entry.S.
+ * - Upon entry, current's hvm is already flushed.
+ * - Upon exit, run_current() is called to return to user space.
+ */
+int sys_switch_helper(pid_t pid)
+{
+#if ENABLED(CONFIG_PREEMPT)
+    switch_next();
+    return 0;
+#else
+    return switch_proc(pid);
+#endif
+}
 
 /*
  * sys_kill only sets killed to true, as the process may be running
@@ -211,7 +219,8 @@ int sys_kill(pid_t pid)
     proc = get_proc(pid);
     proc->killed = 1;
 
-    if (!is_proc_state(pid, PROC_RUNNING)) {
+    if (!is_proc_state(pid, PROC_RUNNING))
+    {
         proc->state = PROC_ZOMBIE;
         proc_ready_del(proc);
     }
@@ -335,4 +344,13 @@ void fault(void)
     pr_info("fault: pid %ld killed\n", pid);
     switch_next();
     run_current();
+}
+
+// custom systemcalls for setting syscall filters
+int sys_set_usyscall_filter(pid_t pid, uint128_t filter)
+{
+    struct proc *proc;
+    proc = get_proc(pid);
+    proc->unix_filter = filter;
+    return 0;
 }

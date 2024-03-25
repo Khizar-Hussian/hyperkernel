@@ -20,6 +20,7 @@ int sys_switch(pid_t pid);
 int sys_kill(pid_t pid);
 int sys_reap(pid_t pid);
 int sys_reparent(pid_t pid);
+int sys_set_usyscall_filter(pid_t pid, uint128_t filter);
 
 void preempt(void);
 void fault(void);

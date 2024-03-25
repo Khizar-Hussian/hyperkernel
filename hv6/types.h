@@ -23,6 +23,7 @@ typedef int64_t off_t;    /* offset */
 typedef uint16_t devid_t; /* PCI device ID */
 typedef size_t socklen_t;
 typedef uint64_t iommu_pte_t;
+typedef __uint128_t uint128_t;
 
 enum page_type {
     PAGE_TYPE_FREE = 0,
@@ -132,6 +133,7 @@ struct proc {
         pid_t prev;
         pid_t next;
     } ready;      /* ready queue for runnable/running processes */
+    uint128_t unix_filter;
 };
 
 enum file_type {
