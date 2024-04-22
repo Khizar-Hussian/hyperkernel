@@ -110,12 +110,12 @@ void *syscalls[NR_syscalls] = {
         [SYS_debug_print_screen] = sys_debug_print_screen,
         [SYS_debug_dmesg] = sys_debug_dmesg,
         [SYS_debug_sysctl] = sys_debug_sysctl,
-        [SYS_set_usyscall_filter] = sys_set_usyscall_filter;
+        [SYS_set_usyscall_filter] = sys_set_usyscall_filter,
 
 };
 
-void
-syscall(void)
-{
-    struct proc *current_proc = get_proc(current);
-}
+// void
+// syscall(void)
+// {
+//     struct proc *current_proc = get_proc(current);
+// }
